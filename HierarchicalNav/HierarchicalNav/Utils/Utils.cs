@@ -23,28 +23,24 @@ namespace HierarchicalNav.Utils
         }
 
     }
-    public abstract class ExtendedBindableObject : BindableObject
+    public class Functions
     {
-        public void RaisePropertyChanged<T>(Expression<Func<T>> property)
+        public static CTree<string> GetTree()
         {
-            var name = GetMemberInfo(property).Name;
-            OnPropertyChanged(name);
-        }
-
-        private MemberInfo GetMemberInfo(Expression expression)
-        {
-            MemberExpression operand;
-            LambdaExpression lambdaExpression = (LambdaExpression)expression;
-            if (lambdaExpression.Body as UnaryExpression != null)
-            {
-                UnaryExpression body = (UnaryExpression)lambdaExpression.Body;
-                operand = (MemberExpression)body.Operand;
-            }
-            else
-            {
-                operand = (MemberExpression)lambdaExpression.Body;
-            }
-            return operand.Member;
+            CTree<string> root = new CTree<string>("Root", null, "Root");
+            Action<CTree<string>, int> createtree = null;
+            createtree = (CTree<string> tree, int level) => { 
+                if(level == 0)
+                    return; 
+                for(int i = 0; i < 8; i++)
+                {
+                    var child = new CTree<string>($"Page:{i + 1}", tree, (i + 1).ToString());
+                    tree.Children.AddLast(child);
+                    createtree(child, level - 1);
+                }
+            };
+            createtree(root, 5);
+            return root;
         }
     }
 }
